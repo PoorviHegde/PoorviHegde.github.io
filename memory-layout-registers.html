@@ -76,20 +76,22 @@
 				    <p>For those of you who are clueless about how to go about the binary analysis/reverse engineering/memory corruption challenges in CTFs, I hope that this article will give you enough background knowledge to get started. </p>
 				    <h5 class="my-3">What you may need to follow along – </h5>
                     <ol class="mb-5">
-                        <li class="mb-2">Linux system (Refer - https://linuxhint.com/install_ubuntu_virtualbox_2004/ )</li>
-                        <li class="mb-2">Python 3.6 or higher (Refer - https://tecadmin.net/install-python-3-6-ubuntu-linuxmint/ )</li>
-                        <li class="mb-2">gdb-gef (Refer - https://gef.readthedocs.io/en/master/ )</li>
-                        <li class="mb-2">4.	ghidra (Refer - https://malware.news/t/install-ghidra-10-0-1-on-ubuntu-20/51061 )</li>
-                        <li class="mb-2">5.	pwntools (Refer - https://docs.pwntools.com/en/stable/install.html )</li>
+                        <li class="mb-2">Linux system (Refer - <a href="https://linuxhint.com/install_ubuntu_virtualbox_2004/">Ubuntu Virtualbox</a>" )</li>
+                        <li class="mb-2">Python 3.6 or higher (Refer - <a href="https://tecadmin.net/install-python-3-6-ubuntu-linuxmint/">Python 3.6</a>" )</li>
+                        <li class="mb-2">gdb-gef (Refer - <a href="https://gef.readthedocs.io/en/master/">GDB-GEF</a>" )</li>
+                        <li class="mb-2">ghidra (Refer - <a href="https://malware.news/t/install-ghidra-10-0-1-on-ubuntu-20/51061">Ghidra</a> )</li>
+                        <li class="mb-2">pwntools (Refer - <a href="https://docs.pwntools.com/en/stable/install.html">Pwntools</a> )</li>
                     </ol>
                     <p>Now that you have the required tools, let’s get started with the basics. For our purpose, we’ll be looking at x86-64bit intel architecture.</p>
                     <p>Normally for binary analysis, all you’ll be given is a binary file. There are two ways you can understand what the binary program is doing. We can either look at the assembly code directly and try to figure it out or reverse it to get something close to the original source code. Assembly approach is relatively harder and needs a significant understanding and experience with assembly programming. While reversing the binary with tools such as ghidra or IDA-pro is much easier, it might not always be possible. But for now, let’s assume that it’s possible to get the reversed code. We can look into the assembly approach later.</p>
                     <p>So the first step is to load the binary into a tool such as ghidra. Ghidra is open-source free to use tool that offers very useful functionalities. You can follow this article https://www.issp.com/post/reverse-engineering-with-ghidra to understand how to load the binary into ghidra.</p>
                     <p>Alright, now you have something that looks like the source code. Mostly these are in C programming language. You would need some understanding of C to figure out what the vulnerability is. In most cases, the vulnerability would lead to memory corruption either by exploiting the stack or the heap. To understand better what exactly I mean, you’d need to understand how the program is loaded into the memory for execution.</p>
+                    <br>
                     <img class="img-fluid" src="assets/images/blog/memory-layout.png" alt="image">
+                    <br>
                     <p>The above image (Refer - https://www.geeksforgeeks.org/memory-layout-of-c-program/ ) shows the structure of a program in the computer memory. The stack is used to store function calls, initialized variables, arrays and arguments passed to the program. We need to understand the exact structure of a function call in the stack. But before that, let me give you a brief background on registers.</p>
                     <p>A register is a small data holding place. It is a very fast memory and makes it very convenient for computers to execute programs. It is used to quickly store, transfer and operate on data based on instructions (assembly instructions). Lets look at the registers available to us in x86-64 architecture. The registers here can hold 8/16/32/64 bits of data at once. </p>
-                    <h5 class="my-3">CPU General purpose registers</h5>
+                    <h5 class="my-5">CPU General purpose registers</h5>
                     <ul class="mb-5">
                         <li class="mb-2">8 bit registers – AL, BL, CL, DL, AH, BH, CH, DH</li>
                         <li class="mb-2">16 bit registers – AX, BX, CX, DX</li>
@@ -97,7 +99,7 @@
                         <li class="mb-2">64 bit registers – RAX, RBX, RCX, RDX, R8, R9, R10, R11, R12, R13, R14, R15</li>
                     </ul>
                     <img class="img-fluid" src="assets/images/blog/registers.png" alt="image">
-                    <h5 class="my-3">CPU special registers </h5>
+                    <h5 class="my-5">CPU special registers </h5>
                     <ul class="mb-5">
                         <li class="mb-2">SP/ESP/RSP – Stack Pointers. They are incremented/ decremented with push/pop instructionsH</li>
                         <li class="mb-2">BP/EBP/RBP – Stack Base Pointer/ Frame Pointers. They are used to keep track of the stack pointer values when function startsX</li>
@@ -123,6 +125,7 @@
                     </ul>
                     <p>The stack of a function can be seen in the diagram below – </p>
                     <img class="img-fluid" src="assets/images/blog/function-stack.png" alt="image">
+                    <br>
                     <p>Process: <br>
                         <ul class="mb-5">
                             <li class="mb-2">Before a function call takes place, the function arguments are pushed onto the stack. Pushing an address on stack is equal to decreasing the stack pointer by 8 (or 4 for 32bit) and copying the address into the new location of the stack pointer. This is called ‘function prologue’.</li>
